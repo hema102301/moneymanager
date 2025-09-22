@@ -33,9 +33,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	    System.out.println("Incoming request path: " + path);
 	    System.out.println("Authorization header: " + request.getHeader("Authorization"));
 
-	    if (path.equals("/api/v1.0/register") ||
-	        path.equals("/api/v1.0/activate") ||
-	        path.equals("/api/v1.0/login")) {
+	    if (path.equals("/register") ||
+	        path.equals("/activate") ||
+	        path.equals("/login")) {
 	        filterChain.doFilter(request, response);
 	        return;
 	    }
