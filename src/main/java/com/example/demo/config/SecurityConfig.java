@@ -43,7 +43,7 @@ public class SecurityConfig {
             		.requestMatchers(
             			    "/status",
             			    "/health",
-            			    "/register",
+            			    "/api/v1.0/register",
             			    "/activate",
             			    "/login"
             			).permitAll()
