@@ -30,7 +30,7 @@ public class ProfileService {
 	private final AuthenticationManager authManager;
 	private final Jwtutil jwtutil;
 	
-	@Value("{$app.activation.url}")
+	@Value("${app.activation.url}")
 	private String activationUrl;
 	
 	public ProfileDto registerProfile(ProfileDto dto) {

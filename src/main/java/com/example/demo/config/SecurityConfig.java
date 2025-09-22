@@ -40,12 +40,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
-                .requestMatchers(
-                        "/api/v1.0/status",
-                        "/api/v1.0/health",
-                        "/api/v1.0/register",
-                        "/api/v1.0/activate",
-                        "/api/v1.0/login").permitAll()
+            		.requestMatchers(
+            			    "/status",
+            			    "/health",
+            			    "/register",
+            			    "/activate",
+            			    "/login"
+            			).permitAll()
                 // Allow preflight OPTIONS requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // All other endpoints require authentication
