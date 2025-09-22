@@ -1,0 +1,89 @@
+package com.example.demo.service;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dto.ExpenseDTO;
+import com.example.demo.dto.IncomeDTO;
+import com.example.demo.dto.RecentTransactionDTO;
+import com.example.demo.entity.ProfileEntity;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class DashboardService {
+	
+	private final IncomeService incomeService;
+	private final ExpenseService expenseService;
+	private final ProfileService profileService;
+	
+	
+	public Map<String, Object> getDashBoardData() {
+	    ProfileEntity profile = profileService.getCurrentProfile();
+	    Map<String, Object> returnValue = new LinkedHashMap<>();
+
+	    List<IncomeDTO> latestIncomes = incomeService.getLatest5incomesForCurrentUser();
+	    List<ExpenseDTO> latestExpenses = expenseService.getLatest5ExpensesForCurrentUser();
+
+	    List<RecentTransactionDTO> recentTransactions = Stream.concat(
+	    	    latestIncomes.stream().map(income ->
+	    	        RecentTransactionDTO.builder()
+	    	            .id(income.getId())
+	    	            .profileId(profile.getId())
+	    	            .icon(income.getIcon())
+	    	            .name(income.getName())
+	    	            .amount(income.getAmount())
+	    	            .date(income.getDate())
+	    	            .createdAt(income.getCreatedAt())
+	    	            .updatedAt(income.getUpdatedAt())
+	    	            .type("income")
+	    	            .build()
+	    	    ),
+	    	    latestExpenses.stream().map(expense ->
+	    	        RecentTransactionDTO.builder()
+	    	            .id(expense.getId())
+	    	            .profileId(profile.getId())
+	    	            .icon(expense.getIcon())
+	    	            .name(expense.getName())
+	    	            .amount(expense.getAmount())
+	    	            .date(expense.getDate())
+	    	            .createdAt(expense.getCreatedAt())
+	    	            .updatedAt(expense.getUpdatedAt())
+	    	            .type("expense")
+	    	            .build()
+	    	    )
+	    	)
+	    	.sorted((RecentTransactionDTO a,RecentTransactionDTO b) -> {
+	    	    int cmp = b.getDate().compareTo(a.getDate());
+	    	    if (cmp == 0) {
+	    	        if (a.getCreatedAt() != null && b.getCreatedAt() != null) {
+	    	            return b.getCreatedAt().compareTo(a.getCreatedAt());
+	    	        } else if (a.getCreatedAt() != null) {
+	    	            return -1;
+	    	        } else if (b.getCreatedAt() != null) {
+	    	            return 1;
+	    	        }
+	    	    }
+	    	    return cmp;
+	    	})
+	    	.collect(Collectors.toList());
+
+
+	    returnValue.put("totalBalance",
+	            incomeService.totalIncomeForCurrentUser()
+	                    .subtract(expenseService.totalExpenseForCurrentUser()));
+	    returnValue.put("totalIncome", incomeService.totalIncomeForCurrentUser());
+	    returnValue.put("totalExpense", expenseService.totalExpenseForCurrentUser());
+	    returnValue.put("recent5Expenses",latestExpenses);
+	    returnValue.put("recent5Incomes",latestIncomes);
+	    returnValue.put("recentTransactions",recentTransactions);
+	    
+	    return returnValue;
+	}
+}
