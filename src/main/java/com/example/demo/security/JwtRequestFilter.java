@@ -30,6 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	        throws ServletException, IOException {
 
 	    String path = request.getServletPath();
+	    System.out.println("Incoming request path: " + path);
+	    System.out.println("Authorization header: " + request.getHeader("Authorization"));
+
 	    if (path.equals("/api/v1.0/register") ||
 	        path.equals("/api/v1.0/activate") ||
 	        path.equals("/api/v1.0/login")) {
@@ -40,6 +43,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	    String authHeader = request.getHeader("Authorization");
 	    String email = null;
 	    String token = null;
+	    
+	    
 
 	    if (authHeader != null && authHeader.startsWith("Bearer ")) {
 	        token = authHeader.substring(7);
