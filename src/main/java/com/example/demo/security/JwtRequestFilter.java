@@ -30,9 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	        throws ServletException, IOException {
 
 	    String path = request.getServletPath();
-
-	    // Skip public endpoints
-	    if (path.equals("/register") || path.equals("/activate") || path.equals("/login")) {
+	    if (path.equals("/api/v1.0/register") ||
+	        path.equals("/api/v1.0/activate") ||
+	        path.equals("/api/v1.0/login")) {
 	        filterChain.doFilter(request, response);
 	        return;
 	    }
