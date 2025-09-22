@@ -26,7 +26,7 @@ public class ProfileService {
 
     private final ProfileRepo profileRepo;
     private final ProfileMapper mapper;
-    private final AsyncEmailService asyncEmailService;
+    private final EmailService emailService;
     private final AuthenticationManager authManager;
     private final Jwtutil jwtutil;
 
@@ -34,15 +34,20 @@ public class ProfileService {
     private String activationUrl;
 
     public ProfileDto registerProfile(ProfileDto dto) {
+        // 1. Save user in DB
         ProfileEntity newProfile = mapper.toEntity(dto);
         newProfile.setActivationToken(UUID.randomUUID().toString());
         newProfile = profileRepo.save(newProfile);
 
+        // 2. Build activation link
         String activationLink = activationUrl + "/api/v1.0/activate?token=" + newProfile.getActivationToken();
+        String subject = "Activate Your Money Manager Account";
+        String body = "Click the following link to activate your account: " + activationLink;
 
-        // Send email asynchronously
-        asyncEmailService.sendActivationEmail(newProfile.getEmail(), activationLink);
+        // 3. Send email asynchronously
+        emailService.sendEmail(newProfile.getEmail(), subject, body);
 
+        // 4. Return DTO
         return mapper.toDto(newProfile);
     }
 

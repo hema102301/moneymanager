@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +28,6 @@ public class EmailService {
     @Async
     public void sendEmail(String to, String subject, String body) {
         try {
-            // Prepare headers
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("api-key", apiKey);
-
-            // Prepare payload
             Map<String, Object> emailRequest = Map.of(
                 "sender", Map.of("name", "Money Manager", "email", fromEmail),
                 "to", List.of(Map.of("email", to)),
@@ -41,13 +35,16 @@ public class EmailService {
                 "htmlContent", body
             );
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("api-key", apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(emailRequest, headers);
 
-            // Send email
-            restTemplate.postForObject("https://api.brevo.com/v3/smtp/email", request, String.class);
+            restTemplate.postForEntity("https://api.brevo.com/v3/smtp/email", request, String.class);
 
         } catch (Exception e) {
-            // Log error but don't block registration
+            // Log error, but do NOT fail registration
             System.err.println("Failed to send email: " + e.getMessage());
         }
     }
