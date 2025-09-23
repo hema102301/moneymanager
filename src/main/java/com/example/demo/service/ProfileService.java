@@ -36,6 +36,7 @@ public class ProfileService {
     public ProfileDto registerProfile(ProfileDto dto) {
         // 1. Save user in DB
         ProfileEntity newProfile = mapper.toEntity(dto);
+        System.out.println(newProfile);
         newProfile.setActivationToken(UUID.randomUUID().toString());
         newProfile = profileRepo.save(newProfile);
 

@@ -32,30 +32,25 @@ public class SecurityConfig {
 
     private final MyUserDetailsServices userDetailServices;
     private final JwtRequestFilter jwtFilter;
-
     @Bean
      SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-            		.requestMatchers(
-            			    "/status",
-            			    "/health",
-            			    "/register",
-            			    "/activate",
-            			    "/login"
-            			).permitAll()
-                // Allow preflight OPTIONS requests
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // All other endpoints require authentication
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            	    .requestMatchers(
+            	        "/status",
+            	        "/health",
+            	        "/register",
+            	        "/login",
+            	        "/activate"
+            	    ).permitAll()
+            	    .anyRequest().authenticated()
+            	)
+
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
