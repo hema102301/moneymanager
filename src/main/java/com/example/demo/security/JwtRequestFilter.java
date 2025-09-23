@@ -30,7 +30,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	        throws ServletException, IOException {
 
 	    String path = request.getServletPath();
-	    System.out.println("Incoming request path: " + path);
+	    //System.out.println("Incoming request path: " + path);
+	    System.out.println("Request URI  : " + request.getRequestURI());
+	    System.out.println("Servlet Path : " + request.getServletPath());
+
 	    System.out.println("Authorization header: " + request.getHeader("Authorization"));
 
 	    if (path.equals("/register") ||
